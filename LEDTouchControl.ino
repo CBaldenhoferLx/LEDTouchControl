@@ -1,3 +1,4 @@
+#include "Protocol.h"
 #include <LogHelper.h>
 #include <TaskManager.h>
 
@@ -16,7 +17,9 @@ LogicController logicController;
 void setup() {
   LOG_INIT();
   LOG_WAIT();
-  
+
+  LOG_PRINTLN(F("Init"));
+
   taskManager.registerTask(&commController);
   taskManager.registerTask(&touchController);
   taskManager.registerTask(&ledController);

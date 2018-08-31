@@ -7,9 +7,10 @@
 #include <AbstractIntervalTask.h>
 #include <Property.h>
 #include <Wire.h>
-#include "Adafruit_MPR121.h"
+#include <Adafruit_MPR121.h>
 
 #define TP_COUNT 12
+#define TP_ADDRESS 0x5A
 
 class TouchController : public AbstractIntervalTask {
 public:

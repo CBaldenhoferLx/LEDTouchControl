@@ -16,9 +16,13 @@ TouchController::~TouchController() {
 void TouchController::init() {
   touchPoints = new Adafruit_MPR121();
 
-  if (!touchPoints->begin(0x5A)) {
+  // will hang here if no PU resistor
+  /*
+  if (!touchPoints->begin(TP_ADDRESS)) {
     LOG_PRINTLN("MPR121 not found !");
-  }
+  } else {
+    LOG_PRINTLN("MPR121 initialized");
+  }*/ 
   
   for (uint8_t i=0;i<TP_COUNT;i++) {
     tps[i].init(i, false);
@@ -27,10 +31,11 @@ void TouchController::init() {
 }
 
 void TouchController::update() {
-  uint16_t currtouched = touchPoints->touched();
+  //uint16_t currtouched = touchPoints->touched();
   
   for (uint8_t i=0;i<TP_COUNT;i++) {
-    tps[i].setValue( currtouched & _BV(i) );
+    //uint16_t rawData = touchPoints->filteredData(i) - touchPoints->baselineData(i);
+    //tps[i].setValue( currtouched & _BV(i) );
   }
 }
 

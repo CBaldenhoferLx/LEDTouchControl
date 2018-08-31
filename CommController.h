@@ -10,6 +10,8 @@ public:
   void init();
 
   void update();
+
+  void sendCmd(String &data);
   
 };
 

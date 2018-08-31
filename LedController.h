@@ -21,6 +21,8 @@ public:
 
   void setLed(uint8_t i, uint32_t color);
 
+  void setBrightness(uint8_t brightness);
+
 private:
   Adafruit_NeoPixel *ledStrip;
   
