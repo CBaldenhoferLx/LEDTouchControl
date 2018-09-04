@@ -16,9 +16,12 @@ void LogicController::init() {
   for (uint8_t i=0;i<TP_COUNT;i++) {
     tc->tps[i].registerValueChangeListener(this);
   }
+
+  //animationLogic.init();
 }
 
 void LogicController::update() {
+  //animationLogic.update();
 }
 
 void LogicController::onPropertyValueChange(uint8_t id, bool newValue, bool oldValue) {
@@ -27,3 +30,18 @@ void LogicController::onPropertyValueChange(uint8_t id, bool newValue, bool oldV
   // TODO: impl logic
 }
 
+/*
+LogicController::AnimationLogic::AnimationLogic() : AbstractTriggerTask() {
+  
+}
+
+void LogicController::AnimationLogic::init() {
+}
+
+void LogicController::AnimationLogic::update() {
+}
+
+void LogicController::AnimationLogic::onPropertyValueChange(uint8_t id, float newValue, float oldValue) {
+  
+}
+*/

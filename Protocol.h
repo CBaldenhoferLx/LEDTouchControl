@@ -11,4 +11,5 @@
 
 #define SP_COMMENT_PREFIX '/'   // 0x2F
 
+// set Log Prefix
 #define LOG_PREFIX SP_COMMENT_PREFIX
