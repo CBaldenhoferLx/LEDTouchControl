@@ -9,33 +9,40 @@
 TouchController::TouchController() : AbstractIntervalTask(100) {
 }
 
-TouchController::~TouchController() {
-  delete touchPoints;
-}
-
 void TouchController::init() {
-  touchPoints = new Adafruit_MPR121();
-
-  // will hang here if no PU resistor
-  /*
-  if (!touchPoints->begin(TP_ADDRESS)) {
-    LOG_PRINTLN("MPR121 not found !");
-  } else {
-    LOG_PRINTLN("MPR121 initialized");
-  }*/ 
+  for (uint8_t i=0;i<TC_COUNT;i++) {
+    // will hang here if no PU resistor
+    if (!touchPoints[i].begin(TP_ADDRESS+i)) {
+      LOG_PRINTLN("MPR121 not found !");
+    } else {
+      LOG_PRINTLN("MPR121 initialized");
+    }
+  }
   
   for (uint8_t i=0;i<TP_COUNT;i++) {
-    tps[i].init(i, false);
-    tps[i].setOutputOnChange(true);
+    touchPoint.init(i, NO_TOUCH);
+    touchPoint.setOutputOnChange(true);
   }
 }
 
 void TouchController::update() {
-  //uint16_t currtouched = touchPoints->touched();
-  
-  for (uint8_t i=0;i<TP_COUNT;i++) {
-    //uint16_t rawData = touchPoints->filteredData(i) - touchPoints->baselineData(i);
-    //tps[i].setValue( currtouched & _BV(i) );
+  bool found = false;
+
+  for (uint8_t o=0;o<TC_COUNT;o++) {
+    uint16_t currtouched = touchPoints[o].touched();
+    
+  // TODO: optimize this
+    for (uint8_t i=0;i<TP_COUNT;i++) {
+      if (!found && (currtouched & _BV(i))) {
+        touchPoint.setValue((TC_COUNT*o)+i);
+        found = true;
+        break;
+      }
+    }
+  }
+
+  if (!found) {
+    touchPoint.setValue(NO_TOUCH);
   }
 }
 

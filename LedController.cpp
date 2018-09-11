@@ -2,32 +2,56 @@
 
 #include <LogHelper.h>
 
-LedController::LedController() : AbstractTriggerTask() {
-}
+#include "Pins.h"
 
-LedController::~LedController() {
-  delete ledStrip;
+LedController::LedController() : AbstractIntervalTask(10) {
 }
 
 void LedController::init() {
-  ledStrip = new Adafruit_NeoPixel(LED_COUNT, PIN_LED, NEO_GRB + NEO_KHZ800);
-
-  ledStrip->begin();
+  FastLED.addLeds<WS2811, PIN_LED, GRB>(leds, LED_COUNT).setCorrection( TypicalLEDStrip );
 }
 
 void LedController::update() {
 }
 
-void LedController::setLed(uint8_t i, uint32_t color) {
-  i = constrain(i, 0, LED_COUNT-1);
-  ledStrip->setPixelColor(i, color);
-  ledStrip->show();
+void LedController::showStrip() {
+   FastLED.show();
+}
+
+void LedController::setPixel(uint8_t pixel, CRGB color) {
+  pixel = constrain(pixel, 0, LED_COUNT-1);
+  leds[pixel] = color;
+}
+
+void LedController::setPixel(uint8_t pixel, byte red, byte green, byte blue) {
+  pixel = constrain(pixel, 0, LED_COUNT-1);
+  leds[pixel].r = red;
+  leds[pixel].g = green;
+  leds[pixel].b = blue;
+}
+
+void LedController::setAll(CRGB color) {
+  for(int i = 0; i < LED_COUNT; i++ ) {
+    setPixel(i, color); 
+  }
+  showStrip();
+}
+
+void LedController::setAll(byte red, byte green, byte blue) {
+  for(int i = 0; i < LED_COUNT; i++ ) {
+    setPixel(i, red, green, blue); 
+  }
+  showStrip();
 }
 
 void LedController::setBrightness(uint8_t brightness) {
   LOG_PRINT(F("Setting brightness to "));
   LOG_PRINTLN(brightness);
   
-  ledStrip->setBrightness(brightness);
+//  ledStrip->setBrightness(brightness);
+}
+
+uint8_t LedController::middleIndex() {
+  return LED_COUNT / 2;
 }
 

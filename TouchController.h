@@ -9,22 +9,26 @@
 #include <Wire.h>
 #include <Adafruit_MPR121.h>
 
-#define TP_COUNT 12
 #define TP_ADDRESS 0x5A
+
+#define TP_COUNT 12
+#define TC_COUNT 2
+#define TP_COUNT_TOTAL TP_COUNT * TC_COUNT
+
+#define NO_TOUCH 0
 
 class TouchController : public AbstractIntervalTask {
 public:
   TouchController();
-  ~TouchController();
   
   void init();
 
   void update();
 
-  Property<bool> tps[TP_COUNT];
+  Property<uint8_t> touchPoint;   // 0 = no touch, >0: 1..255 left <> right
 
 private:
-  Adafruit_MPR121 *touchPoints;
+  Adafruit_MPR121 touchPoints[TC_COUNT];
   
 };
 

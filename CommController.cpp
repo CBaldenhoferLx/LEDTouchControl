@@ -5,6 +5,7 @@
 #include "TaskIDs.h"
 
 #include "LedController.h"
+#include "LogicController.h"
 
 CommController::CommController() : AbstractTask() {  
 }
@@ -24,7 +25,13 @@ void CommController::update() {
   
       if (cmd == SP_COMMENT_PREFIX) {
         // comment
-      } else if (cmd == SP_BRIGHTNESS) {
+      } else if (cmd == SP_SET_PAGE) {
+        taskManager->getTask<LogicController*>(LOGIC_CONTROLLER)->setPage(param1.toInt());
+      } else if (cmd == SP_SET_CLIMA) {
+        taskManager->getTask<LogicController*>(LOGIC_CONTROLLER)->setClima(param1.toInt());
+      } else if (cmd == SP_SET_VOLUME) {
+        taskManager->getTask<LogicController*>(LOGIC_CONTROLLER)->setVolume(param1.toInt());
+      } else if (cmd == SP_SET_BRIGHTNESS) {
         taskManager->getTask<LedController*>(LED_CONTROLLER)->setBrightness(param1.toInt());
       } else {
         LOG_PRINT(F("Unknown command: "));

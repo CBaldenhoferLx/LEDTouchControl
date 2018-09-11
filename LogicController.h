@@ -7,35 +7,65 @@
 #include <AnimatedProperty.h>
 
 #include "LedController.h"
+#include "TouchController.h"
 
-class LogicController : public AbstractIntervalTask, public Property<bool>::ValueChangeListener {
+#define CLIMA_MARKER_WIDTH 5
+#define VOLUME_MARKER_WIDTH 5
+
+#define TP_MARKER_SPACING_TOTAL TP_MARKER_SPACING * 2
+#define TP_MARKER_WIDTH_TOTAL TP_MARKER_WIDTH * 2
+
+#define TP_MARKER_SPACING 2
+#define TP_MARKER_WIDTH 1
+
+class LogicController : public AbstractIntervalTask {
 public:
+  typedef void(LogicController::*renderMethod)(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
+  
+  enum PAGE_ID {
+    PAGE_HUD,
+    PAGE_APPS,
+    PAGE_CLIMA,
+    PAGE_VOLUME,
+
+    PAGE_DEFAULT = PAGE_HUD,
+    PAGE_MAX = PAGE_VOLUME
+  };
+  
   LogicController();
   
   void init();
 
   void update();
 
-  void onPropertyValueChange(uint8_t id, bool newValue, bool oldValue);
+  void setClimaPalette(CRGBPalette16 *climaPalette);
+
+  void setPage(PAGE_ID page);
+
+  void setVolume(uint8_t volume);
+
+  void setClima(uint8_t clima);
+
+protected:
+  void renderNothing(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
+
+  void renderHUD(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
+
+  void renderApps(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
+
+  void renderClima(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
 
 private:
-/*
-  class AnimationLogic : public AbstractTriggerTask, public Property<float>::ValueChangeListener {
-    public:
-      AnimationLogic();
+  PAGE_ID currentPage = PAGE_DEFAULT;
+  CRGBPalette16 *climaPalette;
+  
+  LogicController::renderMethod activeRenderMethod;
 
-      void init();
+  uint8_t volume = 0;     // unit: TP_COUNT_TOTAL
+  uint8_t clima = 0;      // unit: TP_COUNT_TOTAL
 
-      void update();
-      
-      void onPropertyValueChange(uint8_t id, float newValue, float oldValue);
-      
-    private:
-      AnimatedProperty<float> ledAni[LED_COUNT];
-  };
+  void renderMarker(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
 
-  AnimationLogic animationLogic;
-  */
 };
 
 
