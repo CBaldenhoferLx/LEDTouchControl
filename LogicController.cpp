@@ -16,12 +16,18 @@ void LogicController::update() {
   TouchController *tc = taskManager->getTask<TouchController*>(TOUCH_CONTROLLER);
   LedController* lc = taskManager->getTask<LedController*>(LED_CONTROLLER);
 
-  uint8_t tp = tc->touchPoint.getValue();
+  uint8_t tp = tc->getTouchPoint();
   uint8_t tp_led = map(tp, 0, TP_COUNT_TOTAL, 0, LED_COUNT);
 
   (this->*activeRenderMethod)(tc, lc, tp, tp_led);
   
   lc->showStrip();
+
+  for (uint8_t i=0;i<LED_COUNT;i++) {
+    LOG_PRINT(lc->getPixel(i)%10);
+  }
+  LOG_PRINTLN("");
+  
 }
 
 void LogicController::setClimaPalette(CRGBPalette16 *climaPalette) {
@@ -59,16 +65,39 @@ void LogicController::setClima(uint8_t clima) {
   this->clima = clima;
 }
 
-void LogicController::renderMarker(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led) {
+void LogicController::renderMarker(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led, CRGB markerColor, uint8_t markerWidth, uint8_t markerTailWidth) {
+  lc->setPixel(tp_led, markerColor);
+
+  CRGBPalette16 palette(markerColor, CRGB::Black);
+
+  uint8_t i = tp_led-((markerWidth/2)+markerTailWidth);
+
+  // left tail
+  for (i;i<i+markerTailWidth;i++) {
+    lc->setPixel(i, ColorFromPalette(palette, map(i, 0, markerTailWidth, 255, 0)));
+  }
+
+  //marker itself
+  for (i;i<i+markerWidth;i++) {
+    lc->setPixel(i, markerColor);
+  }
+  
+  // right tail
+  for (i;i<i+markerTailWidth;i++) {
+    lc->setPixel(i, ColorFromPalette(palette, map(i, 0, markerTailWidth, 0, 255)));
+  }
   
 }
 
 void LogicController::renderNothing(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led) {
   // do nothing
+  //LOG_PRINTLN(F("Render nothing"));
 }
 
 void LogicController::renderHUD(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led) {
-  
+  // just render marker
+  lc->setAll(CRGB::Black);
+  renderMarker(tc, lc, tp, tp_led, CRGB::Blue, TP_MARKER_WIDTH, TP_MARKER_TAIL_WIDTH);
 }
 
 void LogicController::renderApps(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led) {

@@ -16,7 +16,8 @@
 #define TP_MARKER_WIDTH_TOTAL TP_MARKER_WIDTH * 2
 
 #define TP_MARKER_SPACING 2
-#define TP_MARKER_WIDTH 1
+#define TP_MARKER_WIDTH 2
+#define TP_MARKER_TAIL_WIDTH 3
 
 class LogicController : public AbstractIntervalTask {
 public:
@@ -64,7 +65,7 @@ private:
   uint8_t volume = 0;     // unit: TP_COUNT_TOTAL
   uint8_t clima = 0;      // unit: TP_COUNT_TOTAL
 
-  void renderMarker(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led);
+  void renderMarker(TouchController *tc, LedController* lc, uint8_t tp, uint8_t tp_led, CRGB markerColor, uint8_t markerWidth, uint8_t markerTailWidth);
 
 };
 

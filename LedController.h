@@ -28,6 +28,8 @@ public:
 
   uint8_t middleIndex();
 
+  CRGB getPixel(uint8_t pixel);
+
 private:
   CRGB leds[LED_COUNT];
   

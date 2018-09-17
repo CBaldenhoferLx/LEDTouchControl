@@ -19,10 +19,13 @@ void CommController::update() {
     String s = Serial.readStringUntil('\n');
     if (s.endsWith("\r")) s.remove(s.length()-1);
     
+    //LOG_PRINTLN(s);
+    //LOG_PRINTLN(s.length());
+
     if (s.length()>=SP_MIN_DATAGRAM_SIZE) {
       uint8_t cmd = s.charAt(0);
       String param1 = s.substring(1);
-  
+
       if (cmd == SP_COMMENT_PREFIX) {
         // comment
       } else if (cmd == SP_SET_PAGE) {

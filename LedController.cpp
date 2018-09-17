@@ -30,6 +30,10 @@ void LedController::setPixel(uint8_t pixel, byte red, byte green, byte blue) {
   leds[pixel].b = blue;
 }
 
+CRGB LedController::getPixel(uint8_t pixel) {
+  return leds[pixel];
+}
+
 void LedController::setAll(CRGB color) {
   for(int i = 0; i < LED_COUNT; i++ ) {
     setPixel(i, color); 

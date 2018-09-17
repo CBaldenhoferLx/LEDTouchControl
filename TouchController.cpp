@@ -18,11 +18,13 @@ void TouchController::init() {
       LOG_PRINTLN("MPR121 initialized");
     }
   }
+
+  touchPointReal.init(0, NO_TOUCH);
+  //touchPointReal.setOutputOnChange(true);
+  touchPointReal.registerValueChangeListener(this);
   
-  for (uint8_t i=0;i<TP_COUNT;i++) {
-    touchPoint.init(i, NO_TOUCH);
-    touchPoint.setOutputOnChange(true);
-  }
+  touchPoint.init(1, NO_TOUCH, TP_ANIMATION_SPEED_MS, 0);
+  //touchPoint.setOutputOnChange(true);
 }
 
 void TouchController::update() {
@@ -30,19 +32,30 @@ void TouchController::update() {
 
   for (uint8_t o=0;o<TC_COUNT;o++) {
     uint16_t currtouched = touchPoints[o].touched();
-    
-  // TODO: optimize this
+
+    // TODO: optimize this
     for (uint8_t i=0;i<TP_COUNT;i++) {
       if (!found && (currtouched & _BV(i))) {
-        touchPoint.setValue((TC_COUNT*o)+i);
+        touchPointReal.setValue((TC_COUNT*o)+i);
         found = true;
+        o = TC_COUNT;
         break;
       }
     }
   }
 
   if (!found) {
-    touchPoint.setValue(NO_TOUCH);
+    touchPointReal.setValue(NO_TOUCH);
   }
+
+  touchPoint.update();
+}
+
+void TouchController::onPropertyValueChange(uint8_t id, int8_t newValue, int8_t oldValue) {
+  touchPoint.setValue(newValue);
+}
+
+uint8_t TouchController::getTouchPoint() {
+  return touchPointReal.getValue();
 }
 
