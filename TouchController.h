@@ -37,6 +37,7 @@ private:
   
   Property<int8_t> touchPointReal;
 
+  float oldTouchPoint;
   AnimatedProperty<float> touchPoint;
   
 };

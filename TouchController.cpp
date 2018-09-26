@@ -24,7 +24,7 @@ void TouchController::init() {
   touchPointReal.registerValueChangeListener(this);
   
   touchPoint.init(1, NO_TOUCH, TP_ANIMATION_SPEED_MS, 0);
-  //touchPoint.setOutputOnChange(true);
+  touchPoint.setOutputOnChange(true);
 }
 
 void TouchController::update() {
@@ -52,7 +52,14 @@ void TouchController::update() {
 }
 
 void TouchController::onPropertyValueChange(uint8_t id, int8_t newValue, int8_t oldValue) {
-  touchPoint.setValue(newValue);
+  if (newValue==NO_TOUCH) {
+    oldTouchPoint = newValue;
+    touchPoint.setValueDirect(newValue);
+  } else if (oldValue==NO_TOUCH) {
+    touchPoint.setValueDirect(newValue);
+  } else {
+    touchPoint.setValue(newValue);
+  }
 }
 
 uint8_t TouchController::getTouchPoint() {
