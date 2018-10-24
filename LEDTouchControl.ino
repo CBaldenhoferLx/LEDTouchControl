@@ -19,7 +19,7 @@ LogicController logicController;
 
 DEFINE_GRADIENT_PALETTE( clima_gradient ) {
     0,   0,  0,  255,   //blue
-  TP_COUNT_TOTAL, 255,  0,  0      //red
+  255, 255,  0,  0      //red
   };
  
 CRGBPalette16 climaPalette = clima_gradient;

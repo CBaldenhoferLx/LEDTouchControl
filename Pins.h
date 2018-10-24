@@ -1,1 +1,1 @@
-#define PIN_LED 3
+#define PIN_LED 2

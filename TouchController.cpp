@@ -51,7 +51,7 @@ void TouchController::update() {
   touchPoint.update();
 }
 
-void TouchController::onPropertyValueChange(uint8_t id, int8_t newValue, int8_t oldValue) {
+void TouchController::onPropertyValueChange(uint8_t id, int newValue, int oldValue) {
   if (newValue==NO_TOUCH) {
     oldTouchPoint = newValue;
     touchPoint.setValueDirect(newValue);
@@ -62,7 +62,8 @@ void TouchController::onPropertyValueChange(uint8_t id, int8_t newValue, int8_t 
   }
 }
 
-uint8_t TouchController::getTouchPoint() {
-  return touchPointReal.getValue();
+float TouchController::getTouchPoint() {
+  return touchPoint.getValue();
+  //return touchPointReal.getValue();
 }
 

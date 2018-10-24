@@ -12,15 +12,15 @@
 
 #define TP_ADDRESS 0x5A
 
-#define TP_COUNT 12
+#define TP_COUNT 10
 #define TC_COUNT 1
 #define TP_COUNT_TOTAL TP_COUNT * TC_COUNT
 
-#define TP_ANIMATION_SPEED_MS 500
+#define TP_ANIMATION_SPEED_MS 250
 
 #define NO_TOUCH -1.0
 
-class TouchController : public AbstractIntervalTask, public Property<int8_t>::ValueChangeListener {
+class TouchController : public AbstractIntervalTask, public Property<int>::ValueChangeListener {
 public:
   TouchController();
   
@@ -28,14 +28,14 @@ public:
 
   void update();
 
-  void onPropertyValueChange(uint8_t id, int8_t newValue, int8_t oldValue);
+  void onPropertyValueChange(uint8_t id, int newValue, int oldValue);
 
-  uint8_t getTouchPoint();
+  float getTouchPoint();
 
 private:
   Adafruit_MPR121 touchPoints[TC_COUNT];
   
-  Property<int8_t> touchPointReal;
+  Property<int> touchPointReal;
 
   float oldTouchPoint;
   AnimatedProperty<float> touchPoint;

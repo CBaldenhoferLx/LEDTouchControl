@@ -8,7 +8,7 @@ LedController::LedController() : AbstractIntervalTask(10) {
 }
 
 void LedController::init() {
-  FastLED.addLeds<WS2811, PIN_LED, GRB>(leds, LED_COUNT).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<WS2811, PIN_LED, GRB>(leds, LED_COUNT);//.setCorrection( TypicalLEDStrip );
 }
 
 void LedController::update() {

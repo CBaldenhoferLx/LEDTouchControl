@@ -19,14 +19,19 @@ void LogicController::update() {
   if (pageChanged) {
     lc->setAll(CRGB::Black);    // clear
     pageChanged = false;
+    lc->showStrip();
   }
 
-  int8_t tp = tc->getTouchPoint();
-  uint8_t tp_led = tp!=NO_TOUCH ? map(tp, 0, TP_COUNT_TOTAL-1, 0, LED_COUNT-1) : 0;
+  float tp = tc->getTouchPoint();
+  int i = map(tp * 1000, 0, 1000 * (TP_COUNT_TOTAL-1), 0, LED_COUNT-1);
+  uint8_t tp_led = tp!=NO_TOUCH ? i : 0;
 
-  (this->*activeRenderMethod)(tc, lc, tp, tp_led);
-  
-  lc->showStrip();
+  if (tp_old!=tp) {
+    (this->*activeRenderMethod)(tc, lc, tp, tp_led);
+
+    lc->showStrip();
+    tp_old = tp;
+  }
 
   // output led state
   /*
@@ -80,33 +85,57 @@ void LogicController::renderMarker(TouchController *tc, LedController* lc, int8_
   LOG_PRINT(tp_led);
   LOG_PRINTLN("Render Marker");
   
-  lc->setPixel(tp_led, markerColor);
+  //lc->setPixel(tp_led, markerColor);
 
   CRGBPalette16 palette(markerColor, CRGB::Black);
 
   LOG_PRINTLN("Palette");
 
-  uint8_t i = tp_led-((markerWidth/2)+markerTailWidth);
+  int i = tp_led-((markerWidth/2)+markerTailWidth);
+  int i2;
+  int i3;
 
   // left tail
-  for (i;i<i+markerTailWidth;i++) {
-    LOG_PRINTLN(map(i, 0, markerTailWidth, 0, 255));
-    lc->setPixel(i, ColorFromPalette(palette, map(i, 0, markerTailWidth, 255, 0)));
+  i2 = min(255, i+markerTailWidth);
+  i3 = 0;
+  for (i;i<i2;i++) {
+    if (i>=0) {
+      LOG_PRINT("LT");
+      LOG_PRINTLN(i);
+      lc->setPixel(i, ColorFromPalette(palette, map(i3, 0, markerTailWidth, 255, 0)));
+    }
+    i3++;
   }
 
+  return;
+
+  LOG_PRINTLN(i);
+  LOG_PRINTLN(min(255,i+markerWidth));
+
   //marker itself
-  for (i;i<i+markerWidth;i++) {
-    lc->setPixel(i, markerColor);
+  i2 = min(255,i+markerWidth);
+  for (i;i<i2;i++) {
+    if (i>=0) {
+      LOG_PRINT("MARKER");
+      LOG_PRINTLN(i);
+      lc->setPixel(i, markerColor);
+    }
   }
   
   LOG_PRINTLN(i);
+  LOG_PRINTLN(min(255, i+markerTailWidth));
 
   // right tail
-  for (i;i<i+markerTailWidth;i++) {
-    lc->setPixel(i, ColorFromPalette(palette, map(i, 0, markerTailWidth, 0, 255)));
+  i2 = min(255, i+markerTailWidth);
+  i3 = 0;
+  for (i;i<i2;i++) {
+    if (i<255) {
+      LOG_PRINT("RT");
+      LOG_PRINTLN(i);
+      lc->setPixel(i, ColorFromPalette(palette, map(i3, 0, markerTailWidth, 0, 255)));
+    }
+    i3++;
   }
-
-  LOG_PRINTLN(i);
 
 }
 
@@ -119,7 +148,7 @@ void LogicController::renderNothing(TouchController *tc, LedController* lc, int8
 void LogicController::renderHUD(TouchController *tc, LedController* lc, int8_t tp, uint8_t tp_led) {
   // just render marker
   lc->setAll(CRGB::Black);
-  //renderMarker(tc, lc, tp, tp_led, CRGB::Blue, TP_MARKER_WIDTH, TP_MARKER_TAIL_WIDTH);
+  renderMarker(tc, lc, tp, tp_led, CRGB::Blue, TP_MARKER_WIDTH, TP_MARKER_TAIL_WIDTH);
 }
 
 void LogicController::renderApps(TouchController *tc, LedController* lc, int8_t tp, uint8_t tp_led) {
@@ -157,31 +186,50 @@ void LogicController::renderApps(TouchController *tc, LedController* lc, int8_t 
 }
 
 void LogicController::renderClima(TouchController *tc, LedController* lc, int8_t tp, uint8_t tp_led) {
+
   if (tp==NO_TOUCH) {
-    CRGB color = ColorFromPalette(*climaPalette, clima);
+    uint8_t mappedClima = map(clima, 0, TP_COUNT_TOTAL-1, 0, PALETTE_MAX);
+    CRGB color = ColorFromPalette(*climaPalette, mappedClima);
     lc->setAll(color);
   } else {
     clima = tp;
-    CRGB color = ColorFromPalette(*climaPalette, clima);
+    uint8_t mappedClima = map(clima, 0, TP_COUNT_TOTAL-1, 0, PALETTE_MAX);
+    LOG_PRINTLN(clima);
+    LOG_PRINTLN(mappedClima);
+    CRGB color = ColorFromPalette(*climaPalette, mappedClima);
   
+    LOG_PRINT(color.r);
+    LOG_PRINT(" ");
+    LOG_PRINT(color.g);
+    LOG_PRINT(" ");
+    LOG_PRINTLN(color.b);
+
     // left part
     uint8_t i = 0;
+    uint8_t i2;
     
     for (i; i<max(0, tp_led - (TP_MARKER_SPACING + TP_MARKER_WIDTH)); i++) {
       lc->setPixel(i, color);
     }
+    
     // spacing
-    for (i; i<i+TP_MARKER_SPACING; i++) {
+    i2 = i+TP_MARKER_SPACING;
+    for (i; i<i2; i++) {
       lc->setPixel(i, CRGB::Black);
     }
+    
     // marker
-    for (i; i<i+TP_MARKER_WIDTH; i++) {
+    i2 = i+TP_MARKER_WIDTH;
+    for (i; i<i2; i++) {
       lc->setPixel(i, CRGB::White);   // marker: white
     }
+    
     // spacing
-    for (i; i<i+TP_MARKER_SPACING; i++) {
+    i2 = i+TP_MARKER_SPACING;
+    for (i; i<i2; i++) {
       lc->setPixel(i, CRGB::Black);
     }
+    
     // right part
     for (i; i<LED_COUNT; i++) {
       lc->setPixel(i, color);
